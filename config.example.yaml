@@ -24,7 +24,8 @@ forecaster:
 # api key from mail jet service https://app.mailjet.com/
 notifier:
   api_key: "api_key"
-  verification_tmpl_id: "00000"
-  weather_tmpl_id: "00000"
+  secret_key: "secret_key"
+  verification_tmpl_id: 00000
+  info_tmpl_id: 00000
 
 
