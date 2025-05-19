@@ -1,11 +1,14 @@
 package mail_jet
 
 import (
+	"context"
 	"fmt"
+	"github.com/EduardMikhrin/forecaster/internal"
 	"github.com/EduardMikhrin/forecaster/internal/core/mailer"
 	"github.com/fatih/structs"
 	"github.com/mailjet/mailjet-apiv3-go/v4"
 	"github.com/pkg/errors"
+	"gitlab.com/distributed_lab/logan/v3"
 )
 
 type mailJet struct {
@@ -13,6 +16,9 @@ type mailJet struct {
 	from               mailjet.RecipientV31
 	verificationTmplId int64
 	infoTmplId         int64
+
+	ctx context.Context
+	log *logan.Entry
 }
 
 func (s *mailJet) SendVerificationEmail(to string, payload interface{}) error {
@@ -33,7 +39,7 @@ func (s *mailJet) SendVerificationEmail(to string, payload interface{}) error {
 }
 
 func (s *mailJet) SendInfoEmail(to []string, payload interface{}) error {
-	info, ok := payload.(*mailer.WeatherPayload)
+	info, ok := payload.(*internal.WeatherPayload)
 	if !ok {
 		return errors.New("payload is not of type WeatherPayload")
 	}
@@ -45,21 +51,18 @@ func (s *mailJet) SendInfoEmail(to []string, payload interface{}) error {
 	return nil
 }
 
-func NewNotifier(client *mailjet.Client, from mailjet.RecipientV31, verificationTmplId, infoTmplId int64) mailer.Mailer {
-	return &mailJet{
-		client:             client,
-		from:               from,
-		verificationTmplId: verificationTmplId,
-		infoTmplId:         infoTmplId,
-	}
-}
-
 func (m *mailJet) sendList(
 	emails []string,
 	subject string,
 	templateID int64,
 	variables map[string]interface{},
 ) error {
+	select {
+	case <-m.ctx.Done():
+		m.log.Debug("context closed")
+		return nil
+	default:
+	}
 
 	var recipients mailjet.RecipientsV31
 	for _, email := range emails {
@@ -91,4 +94,16 @@ func (m *mailJet) sendList(
 	}
 
 	return nil
+}
+
+func NewNotifier(client *mailjet.Client, from mailjet.RecipientV31, verificationTmplId, infoTmplId int64,
+	ctx context.Context, log *logan.Entry) mailer.Mailer {
+	return &mailJet{
+		client:             client,
+		from:               from,
+		verificationTmplId: verificationTmplId,
+		infoTmplId:         infoTmplId,
+		ctx:                ctx,
+		log:                log,
+	}
 }

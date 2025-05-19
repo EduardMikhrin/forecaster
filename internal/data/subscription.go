@@ -9,6 +9,7 @@ type SubscriptionQ interface {
 	Insert(data *Subscription) error
 	Delete(email string) error
 	FilterByEmail(email string) SubscriptionQ
+	FilterByCityId(cityId int) SubscriptionQ
 }
 
 type Subscription struct {

@@ -21,7 +21,7 @@ func (c cacheQ) GetCode(key string) (string, error) {
 	val, err := c.r.Get(key).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return "", data.ErrNotFound
+			return "", nil
 		}
 		return "", errors.Wrap(err, "failed to get code")
 	}

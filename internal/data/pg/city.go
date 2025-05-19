@@ -25,7 +25,7 @@ func (c cityQ) GetAll() ([]data.City, error) {
 	err := c.db.Select(&res, c.sql)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return res, data.ErrNotFound
+			return nil, nil
 		}
 	}
 	return res, err

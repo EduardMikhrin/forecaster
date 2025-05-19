@@ -13,6 +13,7 @@ import (
 const (
 	subscriptionsTableName = "subscriptions"
 	subscriptionEmailField = "email"
+	cityIdField            = "city_id"
 )
 
 type subscriptionQ struct {
@@ -57,7 +58,7 @@ func (s subscriptionQ) GetAll() ([]data.Subscription, error) {
 	err := s.db.Select(&res, s.sql)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, data.ErrNotFound
+			return nil, nil
 		}
 
 		return nil, errors.Wrap(err, "error getting subscriptions")
@@ -91,6 +92,13 @@ func (s subscriptionQ) Delete(email string) error {
 func (s subscriptionQ) FilterByEmail(email string) data.SubscriptionQ {
 	s.sql = s.sql.Where(sq.Eq{subscriptionEmailField: email})
 	s.upd = s.upd.Where(sq.Eq{subscriptionEmailField: email})
+
+	return s
+}
+
+func (s subscriptionQ) FilterByCityId(cityId int) data.SubscriptionQ {
+	s.sql = s.sql.Where(sq.Eq{cityIdField: cityId})
+	s.upd = s.upd.Where(sq.Eq{cityIdField: cityId})
 
 	return s
 }
