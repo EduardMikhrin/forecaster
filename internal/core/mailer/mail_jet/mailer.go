@@ -45,7 +45,7 @@ func (s *mailJet) SendInfoEmail(to []string, payload interface{}) error {
 	return nil
 }
 
-func NewNotifier(client *mailjet.Client, from mailjet.RecipientV31, verificationTmplId, infoTmplId int64) mailer.INotifier {
+func NewNotifier(client *mailjet.Client, from mailjet.RecipientV31, verificationTmplId, infoTmplId int64) mailer.Mailer {
 	return &mailJet{
 		client:             client,
 		from:               from,
