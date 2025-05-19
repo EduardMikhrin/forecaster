@@ -1,0 +1,30 @@
+log:
+  level: debug
+  disable_sentry: true
+
+db:
+  url: postgres://user:user@db:0000/db
+
+redis:
+  addr:
+  password: "very_secret_password"
+  db: 1
+  timeout: 1
+
+listeners:
+  api_http_addr: :0001
+
+# pass Api key from https://www.weatherapi.com
+forecaster:
+  api_key: "api_key"
+
+  # polling timeout is set in seconds
+  polling_timeout: 5
+
+# api key from mail jet service https://app.mailjet.com/
+notifier:
+  api_key: "api_key"
+  verification_tmpl_id: "00000"
+  weather_tmpl_id: "00000"
+
+
